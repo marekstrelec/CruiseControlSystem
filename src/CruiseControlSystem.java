@@ -12,10 +12,12 @@ public class CruiseControlSystem implements ICruiseControlSystem {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-
+		 System.out.print("Cruise Control System started");
+	
 	}
 	
 	public void pulse(Car car){
 		/* Implement Something Here */
+		
 	}
 }
