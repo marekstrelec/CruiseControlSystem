@@ -10,6 +10,10 @@ public class CruiseControlSystem implements ICruiseControlSystem {
 	 * rule against it, but you should not be changing the support code
 	 * and the rest of the code knows only about this).
 	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
 	
 	public void pulse(Car car){
 		/* Implement Something Here */
