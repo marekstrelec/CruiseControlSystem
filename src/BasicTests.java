@@ -86,6 +86,20 @@ public class BasicTests {
     }
 
     @Test
+    public void test_start_ccs_after_off() {
+        // Create input such that the CCS should be started and it hasb been switched off before
+        String[] input_lines = { "true 50.0 0.0 0.5 false false false false false",
+                                 "- - - - true - - - -",
+                                 "- - - - - true - - -",
+                                 "- - - - true - - - -"};
+        OutputState final_state = get_final_state(input_lines);
+
+        assertTrue(Boolean.parseBoolean(final_state.start_ccs_button) == true);
+        assertTrue(Boolean.parseBoolean(final_state.stop_ccs_button) == false);
+        assertTrue(final_state.get_throttle_position() == 1.0);
+    }
+
+    @Test
     public void test_start_ccs_engine_off() {
         // Create input such that the CCS should NOT be started because the engine is off
         String[] input_lines = { "false 50.0 0.0 0.5 false false false false false",
