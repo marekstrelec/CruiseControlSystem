@@ -1,9 +1,9 @@
 public class CruiseControlSystem implements ICruiseControlSystem {
-    private double last_throttle_value_during_cruising = 0.0 ;
-    private boolean was_accelerating_by_pedal;
-    private boolean is_ccs_already_on;
-    private double recorded_throttle_value;
-    private boolean throttle_value_was_recorded;
+    private double last_throttle_value_during_cruising = 0.0;
+    private boolean was_accelerating_by_pedal = false;
+    private boolean is_ccs_already_on = false;
+    private double recorded_throttle_value = 0.0;
+    private boolean throttle_value_was_recorded = false;
 
 
     /**
@@ -22,6 +22,8 @@ public class CruiseControlSystem implements ICruiseControlSystem {
      * @param car   the class that manipulates the state of sensors on the car
      */
     private void startCCS(Car car){
+        car.dashboard.set_start_ccs(true);
+        car.dashboard.set_resume(false);
         car.throttle.setThrottlePosition(car.speed_sensor.get_speed() / 50.0);
         is_ccs_already_on = true;
         last_throttle_value_during_cruising = car.throttle.getThrottlePosition();
@@ -179,12 +181,14 @@ public class CruiseControlSystem implements ICruiseControlSystem {
      * @param car   the class that manipulates the state of sensors on the car
      */
     private void checkResumeCruising(Car car){
-        if (car.dashboard.get_resume()
-        	&& throttle_value_was_recorded){
-	            startCCS(car);
-	            car.throttle.setThrottlePosition(recorded_throttle_value);
-        } else if (car.dashboard.get_resume()){
-            car.throttle.setThrottlePosition(car.speed_sensor.get_speed() / 50.0);
+        if(!car.dashboard.get_start_ccs()){
+            if (car.dashboard.get_resume()
+                && throttle_value_was_recorded){
+                    startCCS(car);
+                    car.throttle.setThrottlePosition(recorded_throttle_value);
+            } else if (car.dashboard.get_resume()){
+                startCCS(car);
+            }
         }
     }
 
