@@ -398,42 +398,47 @@ public class BasicTests {
     /* STOP CCS */
 
     @Test
-    public void test_stop_cruising_by_button_when_accelerating_value_is_smaller(){
+    public void test_stop_cruising_by_button_when_accelerating_by_pedal(){
+        // Create an input such that the CCS is turned on, the accelerating pedal is pressed and later,
+        // the CCS is turned off by pressing the button
         String[] input_lines = { "true 50.0 0.0 0.0 true false false false false",
                                  "- - - 1.5 - - - - -",
                                  "- - - - - true - - -" };
-
         OutputState final_state = get_final_state(input_lines);
-        // Create input such that the CCS should be turned off by button press
-        // and such that the throttle position should be set to 0 by the CCS.
-        // We need to assume that CCS was turned on before it was switched off.
+
+        assertFalse(Boolean.parseBoolean(final_state.start_ccs_button));
+        assertFalse(Boolean.parseBoolean(final_state.start_acceleration_button));
+        assertFalse(Boolean.parseBoolean(final_state.stop_acceleration_button));
         assertEquals(1.5, final_state.get_throttle_position(), 0.001);
     }
 
     @Test
     public void test_stop_cruising_by_brake_pedal(){
+        // Create an input such that the CCS is turned on and the driver pushes the brake pedal
         String[] input_lines = { "true 50.0 0.0 0.0 false false false false false",
                                 "- - - - true - - - -",
                                 "- - 0.1 - - - - - -" };
-
         OutputState final_state = get_final_state(input_lines);
-        // Create input such that the CCS should be turned off by pressing brake pedal
-        // and such that the throttle position should be set to 0 by the CCS.
-        // We need to assume that CCS had been turned on before brake pedal was pressed.
+
+        assertFalse(Boolean.parseBoolean(final_state.start_ccs_button));
+        assertFalse(Boolean.parseBoolean(final_state.start_acceleration_button));
+        assertFalse(Boolean.parseBoolean(final_state.stop_acceleration_button));
         assertEquals(0.0, final_state.get_throttle_position(), 0.001);
     }
 
     @Test
     public void test_stop_cruising_by_engine(){
+        // Create input such that the CCS is running and the engine switches off.
         String[] input_lines = { "true 50.0 0.0 0.0 false false false false false",
                                 "- - - - true - - - -",
                                 "- - - - - - - - - ",
                                 "false - - - - - - - - -" };
         OutputState final_state = get_final_state(input_lines);
-        // Create input such that the CCS should be turned off when engine switches off
-        // and such that the throttle position should be set to 0 by the CCS,
-        // and all button states on the dashboard set to false
-        // We need to assume that CCS had been turned on before engine switched off.
+
+        assertFalse(Boolean.parseBoolean(final_state.engine_status));
+        assertFalse(Boolean.parseBoolean(final_state.start_ccs_button));
+        assertFalse(Boolean.parseBoolean(final_state.start_acceleration_button));
+        assertFalse(Boolean.parseBoolean(final_state.stop_acceleration_button));
         assertEquals(0.0, final_state.get_throttle_position(), 0.001);
     }
 
