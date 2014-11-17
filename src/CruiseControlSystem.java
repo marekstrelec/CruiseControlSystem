@@ -72,7 +72,7 @@ public class CruiseControlSystem implements ICruiseControlSystem {
      *
      * @param car   the class that manipulates the state of sensors on the car
      */
-    private void checkBreakPedalWhileCCSisOn(Car car){
+    private void checkBrakePedalWhileCCSisOn(Car car){
         if (car.brake_pedal.is_brake_on()
             && is_ccs_already_on){
                 car.throttle.setThrottlePosition(0.0);
@@ -203,7 +203,7 @@ public class CruiseControlSystem implements ICruiseControlSystem {
     public void pulse(Car car){
         this.checkCCSStartButton(car);
         this.checkCCSStopButton(car);
-        this.checkBreakPedalWhileCCSisOn(car);
+        this.checkBrakePedalWhileCCSisOn(car);
         this.checkEngineWhileCCSisOn(car);
         this.checkAcceleratingByPedalWhileCCSisOn(car);
         this.checkStartAcceleratingButtonWhileAcceleratingByPedal(car);
@@ -211,15 +211,6 @@ public class CruiseControlSystem implements ICruiseControlSystem {
         this.checkAccelerationByButton(car);
         this.checkStopAccelerationByButton(car);
         this.checkResumeCruising(car);
-
-
-        // if driver is accelerating by pedal and start acceleration button is not pressed
-        // and he was accelerating by button in the previous pulse
-        // then throttle value must correspond to the position of accelerator pedal
-        /*if (car.accelerator_pedal.is_accelerator_on()
-                && !car.dashboard.get_start_accelerating()){
-                    car.throttle.setThrottlePosition(car.accelerator_pedal.get_accelerator());
-            }*/
 
     }
 }

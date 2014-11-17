@@ -10,11 +10,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-/**
- * Test that the CCS behaves as expected at least for the basic tests.
- * You should extend this class with your own tests.
- *
- */
 public class BasicTests {
 
     /**
@@ -24,8 +19,9 @@ public class BasicTests {
      * @param args
      *            arguments to pass to main function of class to be tested
      * @return output result of calling main function of class to be tested
+     * @throws IOException
      */
-    private String captureOutputOfMain(String args[]) {
+    private String captureOutputOfMain(String args[]) throws IOException {
         OutputStream outputStream = new ByteArrayOutputStream();
         PrintStream originalOut = System.out;
         System.setOut(new PrintStream(outputStream));
@@ -61,7 +57,7 @@ public class BasicTests {
     }
 
     @Test
-    public void test_command_line(){
+    public void test_command_line() throws IOException{
         String expected = "true 50.000000 0.000000 0.500000 false false false false false 0.500000\n"
                         + "true 50.000000 0.000000 0.500000 true false false false false 1.000000";
         String[] arguments = { "test-input-files/simple-input.text" };
@@ -124,8 +120,8 @@ public class BasicTests {
     }
 
     @Test
-    public void test_start_ccs_breakpedal_on() {
-        // Create an input such that the CCS should NOT be started because the break pedal is pressed
+    public void test_start_ccs_brakepedal_on() {
+        // Create an input such that the CCS should NOT be started because the brake pedal is pressed
         String[] input_lines = { "true 50.0 0.5 0.0 false false false false false",
                                  "- - - - true - - - -"};
         OutputState final_state = get_final_state(input_lines);
@@ -209,7 +205,7 @@ public class BasicTests {
     }
 
     @Test
-    public void test_accelerate_by_pedal_pedal_is_low(){
+    public void test_accelerate_by_pedal_is_low(){
         // Create an input such that the CCS is on and the driver is accelerating by pedal.
         // The throttle value must be set to the value of the CCS because the pedal position
         // indicates lower throttle value then the CCS
