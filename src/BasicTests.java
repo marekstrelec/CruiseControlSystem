@@ -150,6 +150,7 @@ public class BasicTests {
 
         assertTrue(Boolean.parseBoolean(final_state.start_ccs_button));
         assertTrue(Boolean.parseBoolean(final_state.start_acceleration_button));
+        assertFalse(Boolean.parseBoolean(final_state.stop_acceleration_button));
 
         // The trottle position 1.144 represents 57.2km/h (7.2km/h = 2m/s)
         assertEquals(1.144, final_state.get_throttle_position(), 0.001);
@@ -166,6 +167,7 @@ public class BasicTests {
 
         assertTrue(Boolean.parseBoolean(final_state.start_ccs_button));
         assertTrue(Boolean.parseBoolean(final_state.start_acceleration_button));
+        assertFalse(Boolean.parseBoolean(final_state.stop_acceleration_button));
 
         // The throttle position 2.784 represents 139.2km/h (7.2km/h = 2m/s)
         assertEquals(2.784, final_state.get_throttle_position(), 0.001);
@@ -180,6 +182,10 @@ public class BasicTests {
                                  "- - - 1.9 - - - - -"};
         OutputState final_state = get_final_state(input_lines);
 
+        assertTrue(Boolean.parseBoolean(final_state.start_ccs_button));
+        assertFalse(Boolean.parseBoolean(final_state.start_acceleration_button));
+        assertFalse(Boolean.parseBoolean(final_state.stop_acceleration_button));
+
         assertEquals(1.9, final_state.get_throttle_position(), 0.001);
     }
 
@@ -191,6 +197,10 @@ public class BasicTests {
                                  "- - - 3.7 - - - - -",
                                  "- - - 2.35 - - - - -"};
         OutputState final_state = get_final_state(input_lines);
+
+        assertTrue(Boolean.parseBoolean(final_state.start_ccs_button));
+        assertFalse(Boolean.parseBoolean(final_state.start_acceleration_button));
+        assertFalse(Boolean.parseBoolean(final_state.stop_acceleration_button));
 
         assertEquals(2.35, final_state.get_throttle_position(), 0.001);
     }
@@ -205,6 +215,10 @@ public class BasicTests {
                                  "- - - 0.1 - - - - -"};
         OutputState final_state = get_final_state(input_lines);
 
+        assertTrue(Boolean.parseBoolean(final_state.start_ccs_button));
+        assertFalse(Boolean.parseBoolean(final_state.start_acceleration_button));
+        assertFalse(Boolean.parseBoolean(final_state.stop_acceleration_button));
+
         assertEquals(1.0, final_state.get_throttle_position(), 0.001);
     }
 
@@ -218,6 +232,10 @@ public class BasicTests {
                                  "- - - 2.33 - - - - -"};
         OutputState final_state = get_final_state(input_lines);
 
+        assertTrue(Boolean.parseBoolean(final_state.start_ccs_button));
+        assertFalse(Boolean.parseBoolean(final_state.start_acceleration_button));
+        assertFalse(Boolean.parseBoolean(final_state.stop_acceleration_button));
+
         assertEquals(2.34, final_state.get_throttle_position(), 0.001);
     }
 
@@ -227,7 +245,11 @@ public class BasicTests {
                                  "- - - - - - true - -",
                                  "- - - 2.483 - - - - -" };
         OutputState final_state = get_final_state(input_lines);
-        System.out.println(final_state.get_throttle_position());
+
+        assertTrue(Boolean.parseBoolean(final_state.start_ccs_button));
+        assertTrue(Boolean.parseBoolean(final_state.start_acceleration_button));
+        assertFalse(Boolean.parseBoolean(final_state.stop_acceleration_button));
+
         assertEquals(2.484, final_state.get_throttle_position(), 0.001);
     }
 
@@ -237,20 +259,13 @@ public class BasicTests {
                                  "- - - - - - true - -",
                                  "- - - 2.485 - - - - -" };
         OutputState final_state = get_final_state(input_lines);
+
+        assertTrue(Boolean.parseBoolean(final_state.start_ccs_button));
+        assertTrue(Boolean.parseBoolean(final_state.start_acceleration_button));
+        assertFalse(Boolean.parseBoolean(final_state.stop_acceleration_button));
+
         assertEquals(2.485, final_state.get_throttle_position(), 0.001);
     }
-
-    @Test
-    public void test_accelerate_by_pedal_if_was_previously_accelerating(){
-        String[] input_lines = { "true 50.0 0.0 0.0 true false false false false",
-                                 "- - - 1.2 - - - - -",
-                                 "- - - - - - - - -",
-                                 "- - - - - - - - -" };
-        OutputState final_state = get_final_state(input_lines);
-        assertEquals(1.2, final_state.get_throttle_position(), 0.001);
-    }
-
-
 
     @Test
     public void test_stop_accelerating_by_button(){
@@ -260,7 +275,26 @@ public class BasicTests {
                                   "- - - - - - true - -",
                                   "- - - - - - - true -" };
         OutputState final_state = get_final_state(input_lines);
+
+        assertTrue(Boolean.parseBoolean(final_state.start_ccs_button));
+        assertFalse(Boolean.parseBoolean(final_state.start_acceleration_button));
+        assertFalse(Boolean.parseBoolean(final_state.stop_acceleration_button));
         assertEquals(1.144, final_state.get_throttle_position(), 0.001);
+    }
+
+    @Test
+    public void test_accelerate_by_pedal_after_previous_acceleration(){
+        String[] input_lines = { "true 50.0 0.0 0.0 true false false false false",
+                                 "- - - - - - true - -",
+                                 "- - - - - - - true -",
+                                 "- - - 1.2 - - - - -" };
+        OutputState final_state = get_final_state(input_lines);
+
+        assertTrue(Boolean.parseBoolean(final_state.start_ccs_button));
+        assertFalse(Boolean.parseBoolean(final_state.start_acceleration_button));
+        assertFalse(Boolean.parseBoolean(final_state.stop_acceleration_button));
+
+        assertEquals(1.2, final_state.get_throttle_position(), 0.001);
     }
 
 
@@ -270,8 +304,17 @@ public class BasicTests {
                                   "- - - 1.2 - - - - -",
                                   "- - - 0.0 - - - - -"};
         OutputState final_state = get_final_state(input_lines);
+
+        assertTrue(Boolean.parseBoolean(final_state.start_ccs_button));
+        assertFalse(Boolean.parseBoolean(final_state.start_acceleration_button));
+        assertFalse(Boolean.parseBoolean(final_state.stop_acceleration_button));
+
         assertEquals(1.0, final_state.get_throttle_position(), 0.001);
     }
+
+
+
+    /* RESUME CRUISING */
 
     @Test
     public void test_resume_cruising(){
