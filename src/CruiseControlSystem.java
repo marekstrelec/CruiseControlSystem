@@ -15,7 +15,6 @@ public class CruiseControlSystem implements ICruiseControlSystem {
         car.dashboard.set_start_accelerating(false);
         car.dashboard.set_stop_accelerating(false);
         car.dashboard.set_stop_ccs(false);
-        car.dashboard.set_resume(false);
     }
 
     /**
@@ -60,7 +59,6 @@ public class CruiseControlSystem implements ICruiseControlSystem {
         if (car.dashboard.get_stop_ccs()){
             was_accelerating_by_pedal = false;
             last_throttle_value_during_cruising = car.throttle.getThrottlePosition();
-            recorded_throttle_value = car.throttle.getThrottlePosition();
             car.throttle.setThrottlePosition(car.accelerator_pedal.get_accelerator());
             setButtonsToFalse(car);
         }
@@ -183,11 +181,10 @@ public class CruiseControlSystem implements ICruiseControlSystem {
     private void checkResumeCruising(Car car){
         if (car.dashboard.get_resume()
         	&& throttle_value_was_recorded){
-            startCCS(car);
-            car.throttle.setThrottlePosition(recorded_throttle_value);
-        } else if (car.dashboard.get_resume()
-            && !throttle_value_was_recorded){
-                car.throttle.setThrottlePosition(car.speed_sensor.get_speed() / 50.0);
+	            startCCS(car);
+	            car.throttle.setThrottlePosition(recorded_throttle_value);
+        } else if (car.dashboard.get_resume()){
+            car.throttle.setThrottlePosition(car.speed_sensor.get_speed() / 50.0);
         }
     }
 

@@ -317,13 +317,28 @@ public class BasicTests {
     /* RESUME CRUISING */
 
     @Test
-    public void test_resume_cruising(){
+    public void test_resume_cruising_1(){
         // Give an input which would change throttle position (acceleration) and during
         // 5th pulse stop cruising
         // in last pulse resume cruising, and this should return throttle position which
         // was recorded after 4th pulse input
-        String[] input_lines = { "true 50.0 0.0 0.0 true false false false false",     // start cruising
-                                  "- - - - - - true - -",   // start accelerating, throttle_posiyion = 1.144000
+        String[] input_lines = { "true 50.0 0.0 0.0 false false false false false",
+                                  "- - - - - - - - true"};
+        OutputState final_state = get_final_state(input_lines);
+        // If current throttle_position after resuming CCS matches with the position
+        // that was before witching off CCS, then test passes
+
+        assertEquals(1.0, final_state.get_throttle_position(), 0.001);
+    }
+    
+    @Test
+    public void test_resume_cruising_2(){
+        // Give an input which would change throttle position (acceleration) and during
+        // 5th pulse stop cruising
+        // in last pulse resume cruising, and this should return throttle position which
+        // was recorded after 4th pulse input
+        String[] input_lines = { "true 50.0 0.0 0.0 true false false false false",
+                                  "- - - - - - true - -",
                                   "- - - - - - - true -",
                                   "- - - - - true - - -",
                                   "true 50.0 0.0 0.0 false false false false false",
@@ -331,6 +346,7 @@ public class BasicTests {
         OutputState final_state = get_final_state(input_lines);
         // If current throttle_position after resuming CCS matches with the position
         // that was before witching off CCS, then test passes
+
         assertEquals(1.144, final_state.get_throttle_position(), 0.001);
     }
 
