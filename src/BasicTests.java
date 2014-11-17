@@ -145,7 +145,7 @@ public class BasicTests {
         OutputState final_state = get_final_state(input_lines);
         // The speed of the car is 50km/h so we should set the throttle position
         // to a position which reflects 57.2km/h (because 7.2km/h = 2m/s)
-        assertTrue(final_state.get_throttle_position() == 1.1440000000000001);
+        assertEquals(1.144, final_state.get_throttle_position(), 0.001);
     }
 
     @Test
@@ -157,7 +157,7 @@ public class BasicTests {
                                  "- - - 1.9 - - - - -"};
         OutputState final_state = get_final_state(input_lines);
         //System.out.println(final_state.get_throttle_position());
-        assertTrue(final_state.get_throttle_position() == 1.9);
+        assertEquals(1.9, final_state.get_throttle_position());
     }
 
     @Test
@@ -166,7 +166,7 @@ public class BasicTests {
                                  "- - - - - - true - -",
                                  "- - - 0.5 - - - - -" };
         OutputState final_state = get_final_state(input_lines);
-        assertTrue(final_state.get_throttle_position() == 1.1440000000000001);
+        assertEquals(1.144, final_state.get_throttle_position(), 0.001);
     }
 
     @Test
@@ -176,7 +176,7 @@ public class BasicTests {
                                  "- - - - - - - - -",
                                  "- - - - - - - - -" };
         OutputState final_state = get_final_state(input_lines);
-        assertTrue(final_state.get_throttle_position() == 1.2);
+        assertEquals(1.2, final_state.get_throttle_position());
     }
 
 
@@ -191,7 +191,7 @@ public class BasicTests {
         OutputState final_state = get_final_state(input_lines);
         //System.out.println(throttle1);
         //System.out.println(throttle2);
-        assertTrue(final_state.get_throttle_position() == 1.1440000000000001);
+        assertEquals(1.144, final_state.get_throttle_position(), 0.001);
     }
 
 
@@ -201,7 +201,7 @@ public class BasicTests {
                                   "- - - 1.2 - - - - -",
                                   "- - - 0.0 - - - - -"};
         OutputState final_state = get_final_state(input_lines);
-        assertTrue(final_state.get_throttle_position() == 1.0);
+        assertEquals(1.0, final_state.get_throttle_position());
     }
 
     @Test
@@ -220,7 +220,7 @@ public class BasicTests {
         // If current throttle_position after resuming CCS matches with the position
         // that was before witching off CCS, then test passes
         System.out.println(final_state.get_throttle_position());
-        assertTrue(final_state.get_throttle_position() == 1.1440000000000001);
+        assertEquals(1.144, final_state.get_throttle_position(), 0.001);
     }
 
     @Test
@@ -234,7 +234,7 @@ public class BasicTests {
         // and such that the throttle position should be set to 0 by the CCS.
         // We need to assume that CCS was turned on before it was switched off.
         //System.out.println(final_state.get_throttle_position());
-        assertTrue(final_state.get_throttle_position() == 1.5);
+        assertEquals(1.5, final_state.get_throttle_position());
     }
 
     @Test
@@ -247,7 +247,7 @@ public class BasicTests {
         // Create input such that the CCS should be turned off by pressing brake pedal
         // and such that the throttle position should be set to 0 by the CCS.
         // We need to assume that CCS had been turned on before brake pedal was pressed.
-        assertTrue(final_state.get_throttle_position() == 0.0);
+        assertEquals(0.0, final_state.get_throttle_position());
     }
 
     @Test
@@ -261,7 +261,7 @@ public class BasicTests {
         // and such that the throttle position should be set to 0 by the CCS,
         // and all button states on the dashboard set to false
         // We need to assume that CCS had been turned on before engine switched off.
-        assertTrue(final_state.get_throttle_position() == 0.0);
+        assertEquals(0.0, final_state.get_throttle_position());
     }
 
 }
