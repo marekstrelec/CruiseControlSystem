@@ -75,7 +75,7 @@ public class BasicTests {
 
     @Test
     public void test_start_ccs() {
-        // Create input such that the CCS should be started and such that
+        // Create an input such that the CCS should be started and such that
         // the throttle position should be set by the CCS in at least one
         // pulse.
         String[] input_lines = { "true 50.0 0.0 0.5 false false false false false",
@@ -89,7 +89,7 @@ public class BasicTests {
 
     @Test
     public void test_start_ccs_after_off() {
-        // Create input such that the CCS should be started and it has been switched off before
+        // Create an input such that the CCS should be started and it has been switched off before
         String[] input_lines = { "true 50.0 0.0 0.5 false false false false false",
                                  "- - - - true - - - -",
                                  "- - - - - true - - -",
@@ -103,7 +103,7 @@ public class BasicTests {
 
     @Test
     public void test_start_ccs_when_engine_is_off() {
-        // Create input such that the CCS should NOT be started because the engine is off
+        // Create an input such that the CCS should NOT be started because the engine is off
         String[] input_lines = { "false 50.0 0.0 0.5 false false false false false",
                                  "- - - - true - - - -"};
         OutputState final_state = get_final_state(input_lines);
@@ -114,7 +114,7 @@ public class BasicTests {
 
     @Test
     public void test_start_ccs_speed_low() {
-        // Create input such that the CCS should NOT be started because the engine is <50 km/h
+        // Create an input such that the CCS should NOT be started because the engine is <50 km/h
         String[] input_lines = { "true 39.0 0.0 0.5 false false false false false",
                                  "- - - - true - - - -"};
         OutputState final_state = get_final_state(input_lines);
@@ -125,7 +125,7 @@ public class BasicTests {
 
     @Test
     public void test_start_ccs_breakpedal_on() {
-        // Create input such that the CCS should NOT be started because the break pedal is pressed
+        // Create an input such that the CCS should NOT be started because the break pedal is pressed
         String[] input_lines = { "true 50.0 0.5 0.0 false false false false false",
                                  "- - - - true - - - -"};
         OutputState final_state = get_final_state(input_lines);
@@ -140,40 +140,104 @@ public class BasicTests {
     /* START ACCELERATING */
 
     @Test
-    public void test_start_accelerating(){
-        // Create input such that the current speed of the car is 50km/h and
+    public void test_start_accelerating_50kmh(){
+        // Create an input such that the current speed of the car is 50km/h and
         // the driver starts the CCS and pushes the acceleration button
         String[] input_lines = { "true 50.0 0.0 1.0 false false false false false",
                                  "- - - - true - - - -",
                                  "- - - - - - true - -" };
         OutputState final_state = get_final_state(input_lines);
 
-        assertTrue(Boolean.parseBoolean(final_state.start_ccs_button) == false);
+        assertTrue(Boolean.parseBoolean(final_state.start_ccs_button));
+        assertTrue(Boolean.parseBoolean(final_state.start_acceleration_button));
 
         // The trottle position 1.144 represents 57.2km/h (7.2km/h = 2m/s)
-        assertEquals(1.144, final_state.get_throttle_position(), 0.001, 0.001);
+        assertEquals(1.144, final_state.get_throttle_position(), 0.001);
+    }
+
+    @Test
+    public void test_start_accelerating_132kmh(){
+        // Create an input such that the current speed of the car is 132km/h and
+        // the driver starts the CCS and pushes the acceleration button
+        String[] input_lines = { "true 132.0 0.0 1.0 false false false false false",
+                                 "- - - - true - - - -",
+                                 "- - - - - - true - -" };
+        OutputState final_state = get_final_state(input_lines);
+
+        assertTrue(Boolean.parseBoolean(final_state.start_ccs_button));
+        assertTrue(Boolean.parseBoolean(final_state.start_acceleration_button));
+
+        // The throttle position 2.784 represents 139.2km/h (7.2km/h = 2m/s)
+        assertEquals(2.784, final_state.get_throttle_position(), 0.001);
     }
 
     @Test
     public void test_accelerate_by_pedal(){
-        // Give an input such that the CCS is on and the driver is accelerating by pedal.
+        // Create an input such that the CCS is on and the driver is accelerating by pedal.
         // The throttle value must be set to the value of the accelerator pedal
         String[] input_lines = { "true 50.0 0.0 0.0 true false false false false",
                                  "- - - 1.8 - - - - -",
                                  "- - - 1.9 - - - - -"};
         OutputState final_state = get_final_state(input_lines);
 
-        //System.out.println(final_state.get_throttle_position());
         assertEquals(1.9, final_state.get_throttle_position(), 0.001);
     }
 
     @Test
-    public void test_acclerate_by_pedal_while_accelerating_by_button(){
-        String[] input_lines = { "true 50.0 0.0 0.0 true false false false false",
-                                 "- - - - - - true - -",
-                                 "- - - 0.5 - - - - -" };
+    public void test_accelerate_by_pedal_2(){
+        // Create an input such that the CCS is on and the driver is accelerating by pedal.
+        // The throttle value must be set to the value of the accelerator pedal
+        String[] input_lines = { "true 117.0 0.0 0.0 true false false false false",
+                                 "- - - 3.7 - - - - -",
+                                 "- - - 2.35 - - - - -"};
         OutputState final_state = get_final_state(input_lines);
-        assertEquals(1.144, final_state.get_throttle_position(), 0.001);
+
+        assertEquals(2.35, final_state.get_throttle_position(), 0.001);
+    }
+
+    @Test
+    public void test_accelerate_by_pedal_pedal_is_low(){
+        // Create an input such that the CCS is on and the driver is accelerating by pedal.
+        // The throttle value must be set to the value of the CCS because the pedal position
+        // indicates lower throttle value then the CCS
+        String[] input_lines = { "true 50.0 0.0 0.0 true false false false false",
+                                 "- - - 2.7 - - - - -",
+                                 "- - - 0.1 - - - - -"};
+        OutputState final_state = get_final_state(input_lines);
+
+        assertEquals(1.0, final_state.get_throttle_position(), 0.001);
+    }
+
+    @Test
+    public void test_accelerate_by_pedal_pedal_is_low_2(){
+        // Create an input such that the CCS is on and the driver is accelerating by pedal.
+        // The throttle value must be set to the value of the CCS because the pedal position
+        // indicates lower throttle value then the CCS
+        String[] input_lines = { "true 117.0 0.0 0.0 true false false false false",
+                                 "- - - 3.7 - - - - -",
+                                 "- - - 2.33 - - - - -"};
+        OutputState final_state = get_final_state(input_lines);
+
+        assertEquals(2.34, final_state.get_throttle_position(), 0.001);
+    }
+
+    @Test
+    public void test_acclerate_by_pedal_while_accelerating_by_button(){
+        String[] input_lines = { "true 117.0 0.0 0.0 true false false false false",
+                                 "- - - - - - true - -",
+                                 "- - - 2.483 - - - - -" };
+        OutputState final_state = get_final_state(input_lines);
+        System.out.println(final_state.get_throttle_position());
+        assertEquals(2.484, final_state.get_throttle_position(), 0.001);
+    }
+
+    @Test
+    public void test_acclerate_by_pedal_while_accelerating_by_button_2(){
+        String[] input_lines = { "true 117.0 0.0 0.0 true false false false false",
+                                 "- - - - - - true - -",
+                                 "- - - 2.485 - - - - -" };
+        OutputState final_state = get_final_state(input_lines);
+        assertEquals(2.485, final_state.get_throttle_position(), 0.001);
     }
 
     @Test
@@ -196,8 +260,6 @@ public class BasicTests {
                                   "- - - - - - true - -",
                                   "- - - - - - - true -" };
         OutputState final_state = get_final_state(input_lines);
-        //System.out.println(throttle1);
-        //System.out.println(throttle2);
         assertEquals(1.144, final_state.get_throttle_position(), 0.001);
     }
 
@@ -226,7 +288,6 @@ public class BasicTests {
         OutputState final_state = get_final_state(input_lines);
         // If current throttle_position after resuming CCS matches with the position
         // that was before witching off CCS, then test passes
-        System.out.println(final_state.get_throttle_position());
         assertEquals(1.144, final_state.get_throttle_position(), 0.001);
     }
 
@@ -240,7 +301,6 @@ public class BasicTests {
         // Create input such that the CCS should be turned off by button press
         // and such that the throttle position should be set to 0 by the CCS.
         // We need to assume that CCS was turned on before it was switched off.
-        //System.out.println(final_state.get_throttle_position());
         assertEquals(1.5, final_state.get_throttle_position(), 0.001);
     }
 
