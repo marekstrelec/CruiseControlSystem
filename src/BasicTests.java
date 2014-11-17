@@ -136,7 +136,6 @@ public class BasicTests {
 
 
 
-
     /* START ACCELERATING */
 
     @Test
@@ -186,7 +185,7 @@ public class BasicTests {
         assertFalse(Boolean.parseBoolean(final_state.start_acceleration_button));
         assertFalse(Boolean.parseBoolean(final_state.stop_acceleration_button));
 
-        // The throttle value of 1.9 corresponds to the value of accelerator pedal 
+        // The throttle value of 1.9 corresponds to the value of accelerator pedal
         // which is greater than the value that would correspond to the speed
         assertEquals(1.9, final_state.get_throttle_position(), 0.001);
     }
@@ -204,7 +203,7 @@ public class BasicTests {
         assertFalse(Boolean.parseBoolean(final_state.start_acceleration_button));
         assertFalse(Boolean.parseBoolean(final_state.stop_acceleration_button));
 
-        // The throttle value of 2.35 corresponds to the value of accelerator pedal 
+        // The throttle value of 2.35 corresponds to the value of accelerator pedal
         // which is greater than the value that would correspond to the speed
         assertEquals(2.35, final_state.get_throttle_position(), 0.001);
     }
@@ -223,8 +222,8 @@ public class BasicTests {
         assertFalse(Boolean.parseBoolean(final_state.start_acceleration_button));
         assertFalse(Boolean.parseBoolean(final_state.stop_acceleration_button));
 
-        // The throttle value of 1.0 corresponds to the speed and this value  
-        // is greater than the value that would correspond to accelerator pedal 
+        // The throttle value of 1.0 corresponds to the speed and this value
+        // is greater than the value that would correspond to accelerator pedal
         // in the last pulse
         assertEquals(1.0, final_state.get_throttle_position(), 0.001);
     }
@@ -243,8 +242,8 @@ public class BasicTests {
         assertFalse(Boolean.parseBoolean(final_state.start_acceleration_button));
         assertFalse(Boolean.parseBoolean(final_state.stop_acceleration_button));
 
-        // The throttle value of 2.34 corresponds to the speed and this value  
-        // is greater than the value that would correspond to accelerator pedal 
+        // The throttle value of 2.34 corresponds to the speed and this value
+        // is greater than the value that would correspond to accelerator pedal
         // in the last pulse
         assertEquals(2.34, final_state.get_throttle_position(), 0.001);
     }
@@ -260,8 +259,8 @@ public class BasicTests {
         assertTrue(Boolean.parseBoolean(final_state.start_acceleration_button));
         assertFalse(Boolean.parseBoolean(final_state.stop_acceleration_button));
 
-        // The throttle value of 2.484 corresponds to the speed and this value  
-        // is greater than the value that would correspond to accelerator pedal 
+        // The throttle value of 2.484 corresponds to the speed and this value
+        // is greater than the value that would correspond to accelerator pedal
         // in the last pulse (we assume that speed hasn't changed)
         assertEquals(2.484, final_state.get_throttle_position(), 0.001);
     }
@@ -277,8 +276,8 @@ public class BasicTests {
         assertTrue(Boolean.parseBoolean(final_state.start_acceleration_button));
         assertFalse(Boolean.parseBoolean(final_state.stop_acceleration_button));
 
-        // The throttle value of 2.485 corresponds to the position of accelerator 
-        // pedal which is greater than the value that would correspond to the speed 
+        // The throttle value of 2.485 corresponds to the position of accelerator
+        // pedal which is greater than the value that would correspond to the speed
         // in the last pulse (we assume that speed hasn't changed)
         assertEquals(2.485, final_state.get_throttle_position(), 0.001);
     }
@@ -295,9 +294,9 @@ public class BasicTests {
         assertTrue(Boolean.parseBoolean(final_state.start_ccs_button));
         assertFalse(Boolean.parseBoolean(final_state.start_acceleration_button));
         assertFalse(Boolean.parseBoolean(final_state.stop_acceleration_button));
-        
-        // The throttle value of 1.144 corresponds to the speed after acceleration  
-        // by button  
+
+        // The throttle value of 1.144 corresponds to the speed after acceleration
+        // by button
         assertEquals(1.144, final_state.get_throttle_position(), 0.001);
     }
 
@@ -316,8 +315,8 @@ public class BasicTests {
         assertFalse(Boolean.parseBoolean(final_state.start_acceleration_button));
         assertFalse(Boolean.parseBoolean(final_state.stop_acceleration_button));
 
-        // The throttle value of 1.2 corresponds to the position of the accelerator  
-        // pedal because this value is greater than the the throttle value after 
+        // The throttle value of 1.2 corresponds to the position of the accelerator
+        // pedal because this value is greater than the the throttle value after
         // acceleration by button which is 1.114
         assertEquals(1.2, final_state.get_throttle_position(), 0.001);
     }
@@ -326,7 +325,7 @@ public class BasicTests {
     @Test
     public void test_stop_accelerating_by_pedal(){
         // After driver was accelerating by pedal while CCS is on and if he is
-        // not accelerating anymore, CCS should set throttle value corresponding 
+        // not accelerating anymore, CCS should set throttle value corresponding
         // to the speed
         String[] input_lines = { "true 50.0 0.0 0.0 true false false false false",
                                   "- - - 1.2 - - - - -",
@@ -337,7 +336,7 @@ public class BasicTests {
         assertFalse(Boolean.parseBoolean(final_state.start_acceleration_button));
         assertFalse(Boolean.parseBoolean(final_state.stop_acceleration_button));
 
-        // The throttle value of 1.0 corresponds to the speed because driver is not 
+        // The throttle value of 1.0 corresponds to the speed because driver is not
         // accelerating by pedal
         assertEquals(1.0, final_state.get_throttle_position(), 0.001);
     }
@@ -347,26 +346,38 @@ public class BasicTests {
     /* RESUME CRUISING */
 
     @Test
-    public void test_resume_cruising_1(){
-        // Give an input which would change throttle position (acceleration) and during
-        // 5th pulse stop cruising
-        // in last pulse resume cruising, and this should return throttle position which
-        // was recorded after 4th pulse input
+    public void test_resume_cruising_when_CCS_is_on(){
+        // Create an input that resumes the CCS when the CCS is switched on
         String[] input_lines = { "true 50.0 0.0 0.0 false false false false false",
                                   "- - - - - - - - true"};
         OutputState final_state = get_final_state(input_lines);
-        // If current throttle_position after resuming CCS matches with the position
-        // that was before witching off CCS, then test passes
 
+        assertTrue(Boolean.parseBoolean(final_state.start_ccs_button));
+        assertFalse(Boolean.parseBoolean(final_state.start_acceleration_button));
+        assertFalse(Boolean.parseBoolean(final_state.stop_acceleration_button));
+        assertFalse(Boolean.parseBoolean(final_state.resume_button));
         assertEquals(1.0, final_state.get_throttle_position(), 0.001);
     }
-    
+
     @Test
-    public void test_resume_cruising_2(){
-        // Give an input which would change throttle position (acceleration) and during
-        // 5th pulse stop cruising
-        // in last pulse resume cruising, and this should return throttle position which
-        // was recorded after 4th pulse input
+    public void test_resume_cruising_without_recorded_throttle_value(){
+        // Create an input that resumes the CCS when the CCS has not been started yet
+        // => no throttle value is recorded
+        String[] input_lines = { "true 50.0 0.0 0.0 false false false false false",
+                                  "- - - - - - - - true"};
+        OutputState final_state = get_final_state(input_lines);
+
+        assertTrue(Boolean.parseBoolean(final_state.start_ccs_button));
+        assertFalse(Boolean.parseBoolean(final_state.start_acceleration_button));
+        assertFalse(Boolean.parseBoolean(final_state.stop_acceleration_button));
+        assertFalse(Boolean.parseBoolean(final_state.resume_button));
+        assertEquals(1.0, final_state.get_throttle_position(), 0.001);
+    }
+
+    @Test
+    public void test_resume_cruising_with_recorded_throttle_value (){
+        // Create an input that resumes the CCS when the CCS has been already started
+        // => the throttle value is recorded
         String[] input_lines = { "true 50.0 0.0 0.0 true false false false false",
                                   "- - - - - - true - -",
                                   "- - - - - - - true -",
@@ -374,11 +385,17 @@ public class BasicTests {
                                   "true 50.0 0.0 0.0 false false false false false",
                                   "- - - - - - - - true"};
         OutputState final_state = get_final_state(input_lines);
-        // If current throttle_position after resuming CCS matches with the position
-        // that was before witching off CCS, then test passes
 
+        assertTrue(Boolean.parseBoolean(final_state.start_ccs_button));
+        assertFalse(Boolean.parseBoolean(final_state.start_acceleration_button));
+        assertFalse(Boolean.parseBoolean(final_state.stop_acceleration_button));
+        assertFalse(Boolean.parseBoolean(final_state.resume_button));
         assertEquals(1.144, final_state.get_throttle_position(), 0.001);
     }
+
+
+
+    /* STOP CCS */
 
     @Test
     public void test_stop_cruising_by_button_when_accelerating_value_is_smaller(){
