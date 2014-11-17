@@ -1,23 +1,13 @@
-/**
- * This is the main class that you need to implement. You only have
- * a single method to implement, but of course that may be easier if
- * you define some auxiliary methods.
- */
 public class CruiseControlSystem implements ICruiseControlSystem {
-    /*
-     * Students may add any private fields or methods that they deem
-     * necessary. Public ones should not be necessary (there is no
-     * rule against it, but you should not be changing the support code
-     * and the rest of the code knows only about this).
-     */
-
-
     private double previous_throttle_value = 0.0 ;
     private boolean was_accelerating_by_pedal = false;
     private boolean is_ccs_already_on = false;
-    private boolean was_accelerating_button_pressed;
 
-    // Method that sets all buttons on the dashboard to false
+
+    /**
+     * Sets all buttons on the dashboard to false
+     * @param car
+     */
     private void setButtonsToFalse(Car car){
         car.dashboard.set_start_ccs(false);
         car.dashboard.set_start_accelerating(false);
@@ -26,60 +16,90 @@ public class CruiseControlSystem implements ICruiseControlSystem {
         car.dashboard.set_resume(false);
     }
 
-    // Method that starts cruising
+    /**
+     * Starts Cruising Control System
+     * @param car   the class that manipulates the state of sensors on the car
+     */
     private void startCCS(Car car){
         car.throttle.setThrottlePosition(car.speed_sensor.get_speed() / 50.0);
         is_ccs_already_on = true;
         previous_throttle_value = car.throttle.getThrottlePosition();
     }
-    public void pulse(Car car){
 
-        // if the Start_CCS button was pressed and all conditions are met to start CCS
-        // then throttle position is set to the current speed divided by 50.0
-        // and button on the dashboard start_ccs is set to true else set all buttons to false
-        // and throttle value to set to the value of accelerator pedal
+    /**
+     * If the Start_CCS button was pressed and all conditions are met to start the CCS,
+     * then the throttle position is set to the current speed / 50.0
+     * and the start_ccs button on the dashboard is set to true
+     * otherwise: all buttons are set to false and the throttle value is set to
+     * the value of the accelerator pedal.
+     *
+     * @param car   the class that manipulates the state of sensors on the car
+     */
+    private void checkCCSStartButton(Car car){
         if (car.dashboard.get_start_ccs()
-            && car.engine_sensor.is_engine_on()
-            && car.speed_sensor.get_speed() >= 40.0
-            && !car.brake_pedal.is_brake_on()){
-                startCCS(car);
-        } else{
-            setButtonsToFalse(car);
-            car.throttle.setThrottlePosition(car.accelerator_pedal.get_accelerator());
-        }
-
-        // If stop_ccs button is pressed then throttle value is set to the value
-        // corresponding to accelerator pedal value and all buttons are set to false
-        if (car.dashboard.get_stop_ccs()){
+                && car.engine_sensor.is_engine_on()
+                && car.speed_sensor.get_speed() >= 40.0
+                && !car.brake_pedal.is_brake_on()){
+                    startCCS(car);
+            }else{
                 setButtonsToFalse(car);
-                was_accelerating_by_pedal = false;
-                previous_throttle_value = car.throttle.getThrottlePosition();
                 car.throttle.setThrottlePosition(car.accelerator_pedal.get_accelerator());
+            }
+    }
+
+    /**
+     * If the stop_ccs button is pressed then throttle value is set to the value
+     * corresponding to the value of the accelerator pedal and all buttons are set to false.
+     *
+     * @param car   the class that manipulates the state of sensors on the car
+     */
+    private void checkCCSStopButton(Car car){
+        if (car.dashboard.get_stop_ccs()){
+            was_accelerating_by_pedal = false;
+            previous_throttle_value = car.throttle.getThrottlePosition();
+            car.throttle.setThrottlePosition(car.accelerator_pedal.get_accelerator());
+            setButtonsToFalse(car);
         }
+    }
 
-
-        // if the brake pedal is hit while CCS is on, then CCS must switch of
-        // itself and all buttons must be set to false, and throttle position to 0.0
+    /**
+     * If the brake pedal is pressed while the CCS is on, then the CCS must switch off
+     * itself, all buttons must be set to false and the throttle position to 0.0.
+     *
+     * @param car   the class that manipulates the state of sensors on the car
+     */
+    private void checkBreakPedalWhileCCSisOn(Car car){
         if (car.brake_pedal.is_brake_on()
             && is_ccs_already_on){
                 car.throttle.setThrottlePosition(0.0);
                 setButtonsToFalse(car);
-
         }
+    }
 
-        // If engine switches off while CCS is on, then CCS must switch of itself
-        // and all buttons must be set to false, and throttle position to 0.0
+    /**
+     * If the engine switches off while the CCS is on, then CCS must switch of itself
+     * and all buttons must be set to false, and throttle position to 0.0.
+     *
+     * @param car   the class that manipulates the state of sensors on the car
+     */
+    private void checkEngineWhileCCSisOn(Car car){
         if (!car.engine_sensor.is_engine_on()
             && is_ccs_already_on ){
                 setButtonsToFalse(car);
                 car.throttle.setThrottlePosition(0.0);
         }
+    }
 
-        // if CCS is on and driver starts accelerating by pedal then throttle
-        // value should be set to the corresponding accelerator pedal value
-        // and previous accelerator pedal state is set to true so that it would
-        // be possible to check whether acceleration function was selected before
-        // stop acceleration function was chosen
+    /**
+     * If the CCS is on and the driver starts accelerating by the pedal then the
+     * throttle value should be set to the corresponding accelerator pedal value
+     * and the previous accelerator pedal state is set to true so that it is
+     * possible to check whether the car has been accelerating before pressing
+     * the stop accelerating button.
+     *
+     * @param car   the class that manipulates the state of sensors on the car
+     */
+    private void checkAcceleratingByPedalWhileCCSisOn(Car car){
         if (car.accelerator_pedal.is_accelerator_on()
             && !car.dashboard.get_start_accelerating()
             && !was_accelerating_by_pedal){
@@ -87,6 +107,107 @@ public class CruiseControlSystem implements ICruiseControlSystem {
                 previous_throttle_value = car.throttle.getThrottlePosition();
                 car.throttle.setThrottlePosition(car.accelerator_pedal.get_accelerator());
         }
+    }
+
+    /**
+     * If the driver is accelerating by the pedal and the start accelerating button is pressed
+     * then the throttle position is set to the biggest value (corresponding to the speed or to
+     * the position of the accelerator pedal).
+     *
+     * @param car   the class that manipulates the state of sensors on the car
+     */
+    private void checkStartAcceleratingButtonWhileAcceleratingByPedal(Car car){
+        if (car.accelerator_pedal.is_accelerator_on()
+            && car.dashboard.get_start_accelerating()){
+                car.throttle.setThrottlePosition(Math.max(car.speed_sensor.get_speed() / 50.0, car.accelerator_pedal.get_accelerator()));
+                previous_throttle_value = car.throttle.getThrottlePosition();
+        }
+    }
+
+    /**
+     * If the CCS is on, and the driver was previously accelerating by pushing the pedal,
+     * then the throttle position is set to the previous position before
+     * the driver started the acceleration process.
+     *
+     * @param car   the class that manipulates the state of sensors on the car
+     */
+    private void setThrottleBackAfterAcceleratingByPedal(Car car){
+        if (was_accelerating_by_pedal
+            && !car.accelerator_pedal.is_accelerator_on()){
+                car.throttle.setThrottlePosition(previous_throttle_value);
+        }
+    }
+
+    /**
+     * If the CCS is on and the driver chooses to accelerate by pushing the button,
+     * and the stop cruising button is not pressed, then the CCS accelerates the car
+     * at manner of 2m/s^2 which corresponds to the value of the throttle.
+     *
+     * @param car   the class that manipulates the state of sensors on the car
+     */
+    private void checkAccelerationByButton(Car car){
+        if (car.dashboard.get_start_accelerating()){
+            car.dashboard.set_stop_accelerating(false);
+            car.throttle.setThrottlePosition((car.speed_sensor.get_speed() + 7.2) / 50.0 );
+            previous_throttle_value = car.throttle.getThrottlePosition();
+
+        }
+    }
+
+    /**
+     * If the CCS is on and the driver decides to stop acceleration by
+     * pushing the stop acceleration button, then the throttle value
+     * is set to the previously achieved value.
+     *
+     * @param car   the class that manipulates the state of sensors on the car
+     */
+    private void checkStopAccelerationByButton(Car car){
+        if (car.dashboard.get_stop_accelerating()){
+            car.throttle.setThrottlePosition(previous_throttle_value);
+            car.dashboard.set_start_accelerating(false);
+            car.dashboard.set_stop_accelerating(false);
+            previous_throttle_value = car.throttle.getThrottlePosition();
+        }
+    }
+
+    /**
+     * If driver selects the resume cruising function, then the throttle value is set to
+     * the previous value that was selected during the last cruising session.
+     * If no value is recorded beforehand, then the throttle position is set
+     * to the current speed.
+     *
+     * @param car   the class that manipulates the state of sensors on the car
+     */
+    private void checkResumeCruising(Car car){
+        if (car.dashboard.get_resume()){
+            car.throttle.setThrottlePosition(previous_throttle_value);
+            startCCS(car);
+        } else if (car.dashboard.get_resume()
+            && previous_throttle_value == 0.0){
+                car.throttle.setThrottlePosition(car.speed_sensor.get_speed() / 50.0);
+        }
+    }
+
+
+
+    /**
+     * The pulse method is called for each state of the car. It checks the sensors
+     * of the car and manipulates their states accordingly.
+     *
+     * @param car   the class that manipulates the state of sensors on the car
+     */
+    public void pulse(Car car){
+        this.checkCCSStartButton(car);
+        this.checkCCSStopButton(car);
+        this.checkBreakPedalWhileCCSisOn(car);
+        this.checkEngineWhileCCSisOn(car);
+        this.checkAcceleratingByPedalWhileCCSisOn(car);
+        this.checkStartAcceleratingButtonWhileAcceleratingByPedal(car);
+        this.setThrottleBackAfterAcceleratingByPedal(car);
+        this.checkAccelerationByButton(car);
+        this.checkStopAccelerationByButton(car);
+        this.checkResumeCruising(car);
+
 
         // if driver is accelerating by pedal and start acceleration button is not pressed
         // and he was accelerating by button in the previous pulse
@@ -95,58 +216,6 @@ public class CruiseControlSystem implements ICruiseControlSystem {
                 && !car.dashboard.get_start_accelerating()){
                     car.throttle.setThrottlePosition(car.accelerator_pedal.get_accelerator());
             }*/
-
-        // if driver is accelerating by pedal and start accelerating button is pressed
-        // then throttle position is set to the biggest value (corresponding to speed or to
-        // accelerator pedal value
-        if (car.accelerator_pedal.is_accelerator_on()
-            && car.dashboard.get_start_accelerating()){
-                car.throttle.setThrottlePosition(Math.max(car.speed_sensor.get_speed() / 50.0, car.accelerator_pedal.get_accelerator()));
-                previous_throttle_value = car.throttle.getThrottlePosition();
-        }
-
-        // if CCS is on, and driver was previously was accelerating by pedal
-        // then throttle position is set to the previous position before
-        // driver started accelerating by pedal
-        if (was_accelerating_by_pedal
-            && !car.accelerator_pedal.is_accelerator_on()){
-                car.throttle.setThrottlePosition(previous_throttle_value);
-        }
-
-        // if CCS is on and the driver chooses accelerate by button function,
-        // and stop cruising button was not pressed, then CCS accelerates the car
-        // at manner of 2m/s^2 which corresponds to the value of the throttle
-        if (car.dashboard.get_start_accelerating()){
-                car.dashboard.set_stop_accelerating(false);
-                was_accelerating_button_pressed = true;
-                car.throttle.setThrottlePosition((car.speed_sensor.get_speed() + 7.2) / 50.0 );
-                previous_throttle_value = car.throttle.getThrottlePosition();
-
-        }
-
-        // if CCS is on and driver previously accelerated by button
-        // and then chooses stop accelerating function, then throttle value
-        // is set to the previously achieved value during the acceleration
-        if (car.dashboard.get_stop_accelerating()){
-            car.throttle.setThrottlePosition(previous_throttle_value);
-            car.dashboard.set_start_accelerating(false);
-            car.dashboard.set_stop_accelerating(false);
-            previous_throttle_value = car.throttle.getThrottlePosition();
-        }
-
-        // if driver selects resume cruising function, then throttle value is set to
-        // the previous value that was selected during the last cruising session
-        // else if no value is recorded before, then throttle position is set
-        // to corresponding current speed
-        if (car.dashboard.get_resume()){
-                car.throttle.setThrottlePosition(previous_throttle_value);
-                startCCS(car);
-        } else {
-            if (car.dashboard.get_resume()
-                && previous_throttle_value == 0.0){
-                    car.throttle.setThrottlePosition(car.speed_sensor.get_speed() / 50.0);
-            }
-        }
 
     }
 }
