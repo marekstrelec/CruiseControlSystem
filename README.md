@@ -3,9 +3,9 @@ Cruise Control System
 Informatics 2 - Software Engineering Homework 3 (2014)
 University of Edinburgh
 
-## Introduction
+## Description
 
-The cruise control function allows the driver of a car to maintain speed without pressing the accelerator pedal.
+The Cruise Control System is responsible for automatically controlling the speed of the car. The system takes over the throttle of the car to maintain a steady speed as set by the driver and to accelerate the car upon the request of the driver.
 
 ### Authors
 * Marek Strelec s1354741
