@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><testrun name="BasicTests (1)" project="CruiseControl" tests="23" started="23" failures="0" errors="0" ignored="0">
+  <testsuite name="BasicTests" time="0.064">
+    <testcase name="test_start_ccs" classname="BasicTests" time="0.001"/>
+    <testcase name="test_start_ccs_after_off" classname="BasicTests" time="0.0"/>
+    <testcase name="test_start_ccs_when_engine_is_off" classname="BasicTests" time="0.0"/>
+    <testcase name="test_start_ccs_speed_low" classname="BasicTests" time="0.0"/>
+    <testcase name="test_start_ccs_brakepedal_on" classname="BasicTests" time="0.0"/>
+    <testcase name="test_start_accelerating_50kmh" classname="BasicTests" time="0.0"/>
+    <testcase name="test_start_accelerating_132kmh" classname="BasicTests" time="0.0"/>
+    <testcase name="test_accelerate_by_pedal" classname="BasicTests" time="0.004"/>
+    <testcase name="test_accelerate_by_pedal_is_low" classname="BasicTests" time="0.002"/>
+    <testcase name="test_accelerate_by_pedal_2" classname="BasicTests" time="0.003"/>
+    <testcase name="test_accelerate_by_pedal_pedal_is_low_2" classname="BasicTests" time="0.005"/>
+    <testcase name="test_acclerate_by_pedal_while_accelerating_by_button" classname="BasicTests" time="0.001"/>
+    <testcase name="test_acclerate_by_pedal_while_accelerating_by_button_2" classname="BasicTests" time="0.001"/>
+    <testcase name="test_stop_accelerating_by_button" classname="BasicTests" time="0.003"/>
+    <testcase name="test_accelerate_by_pedal_after_previous_acceleration" classname="BasicTests" time="0.005"/>
+    <testcase name="test_stop_accelerating_by_pedal" classname="BasicTests" time="0.005"/>
+    <testcase name="test_resume_cruising_when_CCS_is_on" classname="BasicTests" time="0.001"/>
+    <testcase name="test_resume_cruising_without_recorded_throttle_value" classname="BasicTests" time="0.0"/>
+    <testcase name="test_resume_cruising_with_recorded_throttle_value" classname="BasicTests" time="0.004"/>
+    <testcase name="test_stop_cruising_by_button_when_accelerating_by_pedal" classname="BasicTests" time="0.005"/>
+    <testcase name="test_stop_cruising_by_brake_pedal" classname="BasicTests" time="0.001"/>
+    <testcase name="test_stop_cruising_by_engine" classname="BasicTests" time="0.008"/>
+    <testcase name="test_command_line" classname="BasicTests" time="0.015"/>
+  </testsuite>
+</testrun>
