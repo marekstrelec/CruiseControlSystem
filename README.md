@@ -30,7 +30,7 @@ We hope they will be much better than previously.
 ### Instructions
 
 ```sh
-$ cd to CruiseControl/src/ directory 
+$ cd to CruiseControl/src/ directory
 $ javac -cp /usr/share/java/junit4.jar *.java
 $ java -cp .:/usr/share/java/junit4.jar org.junit.runner.JUnitCore BasicTests
 ```
